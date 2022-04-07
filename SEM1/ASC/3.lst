@@ -1,0 +1,51 @@
+     1                                  ; Scrieți un program în limbaj de asamblare care să rezolve expresia aritmetică, considerând domeniile de definiție ale variabilelor
+     2                                  ; a - byte, b - word
+     3                                  ; (b / a * 2 + 10) * b - b * 15;
+     4                                  ; ex. 1: a = 10; b = 40; Rezultat: (40 / 10 * 2 + 10) * 40 - 40 * 15 = 18 * 40 - 1600 = 720 - 600 = 120
+     5                                  ; ex. 2: a = 100; b = 50; Rezultat: (50 / 100 * 2 + 10) * 50 - 50 * 15 = 12 * 50 - 750 = 600 - 750 = - 150
+     6                                  bits 32 ;asamblare si compilare pentru arhitectura de 32 biti
+     7                                  ; definim punctul de intrare in programul principal
+     8                                  global  start 
+     9                                  
+    10                                  extern  exit ; indicam asamblorului ca exit exista, chiar daca noi nu o vom defini
+    11                                  import  exit msvcrt.dll; exit este o functie care incheie procesul, este definita in msvcrt.dll
+    12                                          ; msvcrt.dll contine exit, printf si toate celelalte functii C-runtime importante
+    13                                  segment  data use32 class=data ; 
+    14                                  
+    15 00000000 0A                          a db 10
+    16 00000001 08                          b db 8
+    17 00000002 05                          c db 5
+    18 00000003 02                          d db 2
+    19                                  
+    20                                  segment  code use32 class=code ; 
+    21                                  start: 
+    22                                  	
+    23 00000000 66B80000                    mov ax,0
+    24 00000004 66BA0000                    mov dx,0
+    25                                      
+    26 00000008 A0[00000000]                mov al, [a]
+    27 0000000D 8A15[01000000]              mov dl, [b]
+    28                                     
+    29 00000013 29D0                        sub eax,edx
+    30                                      
+    31 00000015 66BA0000                    mov dx,0
+    32 00000019 8A15[03000000]              mov dl,[d]
+    33                                      
+    34 0000001F 29D0                        sub eax,edx
+    35                                      
+    36 00000021 83C002                      add eax,2
+    37                                      
+    38 00000024 0305[02000000]              add eax,[c] 
+    39                                      
+    40 0000002A BB00000000                  mov ebx,0
+    41 0000002F 80C30A                      add bl,10
+    42 00000032 2B1D[01000000]              sub ebx,[b] 
+    43                                      
+    44 00000038 01D8                        add eax,ebx
+    45                                  	
+    46 0000003A 6A00                    	push   dword 0 
+    47 0000003C FF15[00000000]          	call   [exit]
+    48                                  
+    49                                  
+    50                                  
+    51                                      
