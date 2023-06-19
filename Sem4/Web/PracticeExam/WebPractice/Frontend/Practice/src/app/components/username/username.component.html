@@ -1,0 +1,5 @@
+<form (ngSubmit)="saveName()" routerLink="/login">
+    <label for="name">Enter your name:</label>
+    <input type="text" id="name" [(ngModel)]="userName" name="userName" required>
+    <button type="submit">Save</button>
+</form>

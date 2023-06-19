@@ -1,0 +1,20 @@
+<table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Dev ID</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let pj of projects">
+        <td>{{ pj.name }}</td>
+        <td>{{ pj.projectManagerID }}</td>
+        <td>{{ pj.description }}</td>
+        <td>{{ pj.members }}</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <button (click)="getProjects()">Load Projects</button>
+  
