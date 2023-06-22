@@ -1,0 +1,12 @@
+<div id="results">
+    <table>
+      <tr>
+        <th>Name</th>
+        <th>County</th>
+      </tr>
+      <tr *ngFor="let city of filteredCities">
+        <td><button (click)="selectCity(city)">Button</button> {{city.Name}}</td>
+      </tr>
+    </table>
+  </div>
+  
