@@ -1,0 +1,45 @@
+ 2. Syntax:
+
+The words - predefined tokens are specified between " and ":
+
+Sintactical rules: (file Syntax.in)
+
+program ::= "EU_BOGDAN_DECLAR" decllist ";" cmpdstmt "amin"
+
+decllist ::= declaration | declaration "," decllist
+
+declaration ::= IDENTIFIER "de_tip" type
+
+type1 ::= "ori_alba_ori_neagra" | "caracter_simplu" | "numar_intreg" | "numar_cu_virgula" | "cuvant"
+
+arraydecl ::= "lista" "[" nr "]" "de tip" type1
+
+type  ::= type1|arraydecl
+
+cmpdstmt ::= "no_dai" stmtlist "no_stai"
+
+stmtlist ::= stmt | stmt "," stmtlist
+
+stmt ::= simplstmt | structstmt
+
+simplstmt ::= assignstmt | iostmt
+
+assignstmt ::= expression "ia_locul_la" IDENTIFIER
+
+expression ::= expression plus term | expression minus term | expression ori term | expression impartit term | expression modulo term | term
+
+term ::= term plus factor | term minus factor | term ori factor | term impartit factor | term modulo factor | factor
+
+factor ::= "(" expression ")" | IDENTIFIER
+
+iostmt ::= "citeste" | "printeaza_urmatoarele" "(" IDENTIFIER | IDENTIFIER, {IDENTIFIER}")"
+
+structstmt ::= cmpdstmt | ifstmt | whilestmt
+
+ifstmt ::= "daca" condition "atunci" stmt ["altfel" stmt]
+
+whilestmt ::= "cat_timp" condition "fa" stmt
+
+condition ::= expression RELATION expression
+
+RELATION ::= "mai_mic_ca" | "mai_mic_egal_ca" | "egal_cu" | "diferit_de" | "mai_mare_egal_ca" | "mai_mare_ca"

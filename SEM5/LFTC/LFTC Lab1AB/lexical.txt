@@ -1,0 +1,60 @@
+Alphabet:
+
+a. Upper (A-Z) and lower case letters (a-z) of the English alphabet
+
+       b. Underline character '_';
+
+       c. Decimal digits (0-9);
+
+Lexic:
+
+      a.Special symbols, representing:
+
+- operators plus minus ori impartit_la ia_locul_la mai_mic_ca mai_mic_egal_ca egal mai_mare_egal_ca mai_mare_ca modulo
+
+- separators [ ] { }  : ; space
+
+- reserved words:
+
+    lista caracter cuvant constanta altfel daca numar_intreg program citeste 
+
+    atunci EU_BOGDAN_DECLAR(var) cat_timp fa printeaza_urmatoarele
+    
+    nrpozitiv nrnegativ armaghedon(break)
+
+
+
+b.identifiers
+
+  -a sequence of letters and  digits, but each sequence has to start with a # and end in a $,
+  and it needs to have at least one character (letter or digit) the rule is:
+
+    identifier ::= # character | character{character} $
+
+    character ::= letter | digit
+
+    letter ::= "A" | "B" | . ..| "Z"
+
+    digit ::= "0" | "1" |...| "9"
+
+
+      c.constants
+
+1.integer - rule:
+
+      noconst:= no"nrpozitiv" | no"nrnegativ" 
+
+      no:=digit{no}
+
+2.character
+
+    character:='letter'|'digit'|
+
+3.string
+
+      constchar:="string"
+
+      string:=char{'_'}{string}
+
+      char:=letter|digit
+

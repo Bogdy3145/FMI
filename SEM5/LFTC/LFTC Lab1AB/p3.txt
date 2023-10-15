@@ -1,0 +1,19 @@
+EU_BOGDAN_DECLAR #n$ de_tip numar_intreg, #v$ de_tip numar_intreg, #s$ de_tip numar_intreg,
+		 #i$ de_tip numar_intreg;
+
+citeste(#n$);
+
+1nrpozitiv ia_locul_la #i$;
+0nrpozitiv ia_locul_la #s$;
+
+cat_timp #i$ mai_mic_ca #n$
+	no_dai
+		citeste(#v$);
+		#v$ plus #s$ ia_locul_la #s$;
+		#i$ plus 1 ia_locul_la #i$;
+	no_stai
+
+printeaza_urmatoarele(#s$); 
+
+amin
+		

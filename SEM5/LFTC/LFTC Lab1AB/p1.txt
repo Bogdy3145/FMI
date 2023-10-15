@@ -1,0 +1,22 @@
+
+EU_BOGDAN_DECLAR #a$ de_tip numar_intreg, #b$ de_tip numar_intreg, #c$ de_tip numar_intreg,
+		 #max$ de_tip numar_intreg, #min$ de_tip numar_intreg;
+
+no_dai
+
+daca #a$ mai_mare_ca #b$ atunci
+	no_dai
+		a$ ia_locul_la #max$, #b$ ia_locul_la #min$;
+	no_stai
+altfel 
+	no_dai
+		#b$ ia_locul_la #max$, #a$ ia_locul_la #min$;
+	no_stai
+
+daca #c$ mai_mare_ca #max$ atunci 
+	{#c$ ia_locul_la #max$;} 
+altfel daca #c$ mai_mic_ca #min$ atunci #c$ ia_locul_la #min$;
+
+printeaza_urmatoarele(min, max);
+
+amin
