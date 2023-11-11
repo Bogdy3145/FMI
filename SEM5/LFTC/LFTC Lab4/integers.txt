@@ -1,0 +1,28 @@
+I
+F Z Q
+0 1 2 3 4 5 6 7 8 9 n r p
+I S A B F Z Q
+I Z 0
+I S 1
+I S 2
+I S 3
+I S 4
+I S 5
+I S 6
+I S 7
+I S 8
+I S 9
+S S 0
+S S 1
+S S 2
+S S 3
+S S 4
+S S 5
+S S 6
+S S 7
+S S 8
+S S 9
+S A n
+A B r
+B F p
+B Q n
