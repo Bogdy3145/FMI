@@ -1,0 +1,24 @@
+N = program decllist declaration type1 arraydecl type cmpdstmt stmtlist stmt simplstmt assignstmt expression term factor iostmt structstmt ifstmt whilestmt condition RELATION
+E = plus minus ori impartit_la ia_locul_la mai_mic_ca mai_mic_egal_ca egal_cu mai_mare_egal_ca mai_mare_ca diferit_de modulo [ ] ( ) { } : ; , space lista constanta altfel daca atunci numar_intreg cuvant ori_alba_ori_neagra caracter_simplu numar_cu_virgula citeste EU_BOGDAN_DECLAR cat_timp fa printeaza_urmatoarele armaghedon amin no_dai no_stai de_tip IDENTIFIER CONST
+S = program
+P =
+program -> decllist stmtlist amin | stmtlist amin | amin
+decllist -> EU_BOGDAN_DECLAR declaration | declaration decllist
+declaration -> IDENTIFIER de_tip type
+type1 -> ori_alba_ori_neagra|caracter_simplu|numar_intreg|numar_cu_virgula|cuvant
+arraydecl -> lista [ ] de_tip type1
+type -> type1|arraydecl
+cmpdstmt -> no_dai stmtlist no_stai
+stmtlist -> stmt | stmt stmtlist
+stmt -> simplstmt | structstmt
+simplstmt -> assignstmt | iostmt
+assignstmt -> expression ia_locul_la IDENTIFIER
+expression -> expression plus term | expression minus term | expression ori term | expression impartit_la term | expression modulo term | term
+term -> term plus factor | term minus factor | term ori factor | term impartit_la factor | term modulo factor | factor
+factor -> expression | IDENTIFIER | CONST
+iostmt -> citeste IDENTIFIER | printeaza_urmatoarele ( IDENTIFIER | IDENTIFIER { , IDENTIFIER } | CONST )
+structstmt -> cmpdstmt | ifstmt | whilestmt
+ifstmt -> daca condition atunci cmpdstmt | daca condition atunci cmpdstmt altfel cmpdstmt
+whilestmt -> cat_timp condition fa cmpdstmt
+condition -> expression RELATION expression
+RELATION -> mai_mic_ca | mai_mic_egal_ca | egal_cu | diferit_de | mai_mare_egal_ca | mai_mare_ca
