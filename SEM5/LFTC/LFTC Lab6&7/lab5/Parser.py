@@ -1,4 +1,5 @@
 import copy
+from tabulate import tabulate
 
 
 class LL1Parser:
@@ -13,9 +14,7 @@ class LL1Parser:
 
         self.table = {}
         for terminal in self.grammar.E:
-            if terminal != 'epsilon':
-                self.table[terminal] = []
-        self.table['$'] = []
+            self.table[terminal] = []
         for non_terminal in self.grammar.N:
             self.table[non_terminal] = []
 
@@ -57,63 +56,118 @@ class LL1Parser:
             if currentFirst == self.first:
                 break
 
+
     def compute_follow(self):
-        self.follow[self.grammar.startSymbol].append("epsilon")
+        self.follow[self.grammar.startSymbol].append('$')
 
-        while True:
-            previousFollow = copy.deepcopy(self.follow)
-            for nonterminal in self.grammar.N:
-                for key in self.grammar.P:
-                    for result in self.grammar.P[key]:
-                        if nonterminal in result:
-                            for i in range(len(result)):
-                                firstForNextSymbol = []
-
-                                if result[i] == nonterminal:
-                                    if len(result) > i + 1:
-                                        firstForNextSymbol = self.first[result[i + 1]]
-                                    else:
-                                        self.follow[nonterminal] = list(
-                                            set(self.follow[nonterminal] + previousFollow[key]))
-
-                                    if "epsilon" in firstForNextSymbol and len(result) > i + 1:
-                                        self.follow[nonterminal] = list(set(previousFollow[nonterminal] +
-                                                                            list(firstForNextSymbol)))
-                                    elif len(result) > i + 1:
-                                        self.follow[nonterminal] = list(set(previousFollow[nonterminal] +
-                                                                            list(firstForNextSymbol)))
-
-                                    if "epsilon" in firstForNextSymbol:
-                                        self.follow[nonterminal] = list(
-                                            set(self.follow[nonterminal] + previousFollow[key]))
-
-            if previousFollow == self.follow:
-                break
+        changes = True
+        while changes:
+            changes = False
+            for a in self.grammar.N:
+                for production in self.grammar.P[a]:
+                    for i, symbol in enumerate(production):
+                        copy_follow = copy.deepcopy(self.follow)
+                        if symbol in self.grammar.N:
+                            if i < len(production) - 1:
+                                next_symbol = production[i + 1]
+                                first_beta = copy.deepcopy(self.first[next_symbol])
+                                if 'epsilon' in first_beta:
+                                    first_beta.remove('epsilon')
+                                if 'epsilon' in self.first[next_symbol]:
+                                    first_beta.extend(self.follow[a])
+                                copy_follow[symbol].extend(first_beta)
+                                copy_follow[symbol] = list(set(copy_follow[symbol]))
+                                if self.follow[symbol] != copy_follow[symbol]:
+                                    changes = True
+                                    self.follow[symbol].extend(first_beta)
+                                    self.follow[symbol] = list(set(self.follow[symbol]))
+                            elif symbol != a:
+                                copy_follow[symbol].extend(self.follow[a])
+                                copy_follow[symbol] = list(set(copy_follow[symbol]))
+                                if self.follow[symbol] != copy_follow[symbol]:
+                                    changes = True
+                                    self.follow[symbol].extend(self.follow[a])
+                                    self.follow[symbol] = list(set(self.follow[symbol]))
 
 
     def parsing_table(self):
-        #self.computeFirst()
-        #self.compute_follow()
+        self.computeFirst()
+        self.compute_follow()
         for i in self.grammar.E:
             self.table[i] = [i, "POP", 0]
-        index=0
+
         for element in self.first.keys():
             if element in self.grammar.N:
                 production = self.grammar.P[element]
-                for prod in production:
-                    if "epsilon" in prod:
-                        index+=1
-                        for elem_follow in self.follow[element]:
-                            self.table[element].append(
-                                [elem_follow, 'epsilon', index])
-                    else:
-                        index+=1
-                        char = prod[0]
-                        if char in self.grammar.E:
-                            self.table[element].append(
-                                [char, prod, index])
-
-                        else:
-                            for elem in self.first[char]:
+                if "epsilon" in self.first[element]:
+                    for elem in self.first[element]:
+                        if elem == "epsilon":
+                            for elem_follow in self.follow[element]:
                                 self.table[element].append(
-                                    [elem, production[0], index])
+                                    [elem_follow, 'epsilon', self.grammar.numberedProduction[production[0]] + 1])
+                        else:
+                            if "epsilon" in production:
+                                production.remove("epsilon")
+                            if len(self.grammar.P[element]) > 1:
+                                self.table[element].append([production, "conflict"])
+                            else:
+                                self.table[element].append(
+                                    [elem, production[0], self.grammar.numberedProduction[production[0]]])
+                else:
+                    for elem in self.first[element]:
+                        self.table[element].append(
+                            [elem, production[0], self.grammar.numberedProduction[production[0]]])
+
+    def parseSequence(self, sequence):
+        self.computeFirst()
+        self.compute_follow()
+        self.parsing_table()
+
+        inputStack = []
+        workingStack = []
+        resultStack = []
+
+        for char in sequence:
+            inputStack.append(char)
+
+        workingStack.append(self.grammar.startSymbol)
+
+        while True:
+            if len(inputStack) == 0 and len(workingStack) == 0:
+                return True
+            elif inputStack[0] == workingStack[0]:
+                inputStack.pop()
+                workingStack.pop()
+
+    def print_table(self):
+        self.parsing_table()
+
+        headers = list(self.grammar.E) + ['$']
+
+        data = {i: [' '] * len(headers) for i in self.table}
+
+        for i in self.table:
+            for j in self.grammar.E + ['$']:
+                print(self.table[i][0])
+                if isinstance(self.table[i][0], list):
+                    for elem in self.table[i]:
+                        if j == elem[0]:
+                            data[i][headers.index(j)] = ', '.join((elem[1], str(elem[2])))
+                else:
+                    if j == self.table[i][0]:
+                        data[i][headers.index(j)] = ', '.join((self.table[i][1], str(self.table[i][2])))
+
+        transposed_data = {**{'Keys': list(data.keys())},
+                           **{k: [data[i][headers.index(k)] for i in data] for k in headers}}
+
+        print(transposed_data)
+
+        print(tabulate(transposed_data, headers='keys', tablefmt='grid'))
+
+    def print_first(self):
+        for key in self.first.keys():
+            print(key, self.first[key])
+
+    def print_follow(self):
+        for key in self.follow.keys():
+            print(key, self.follow[key])

@@ -28,7 +28,7 @@ class RegularGrammar:
             elif elements[0] == 'P':
                 indice += 1
                 elements[1].replace(" ", "")
-                prod = elements[1].split("|")
+                prod = elements[1].split("->")
                 self.numberedProduction[prod[1]] = indice
                 if prod[0] in self.P.keys():
                     self.P[prod[0]].append(prod[1])

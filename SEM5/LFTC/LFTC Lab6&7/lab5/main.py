@@ -12,18 +12,19 @@ from grammar2 import RegularGrammar
 # print(g.get_nonterminal_productions('S'))
 # print(g.is_cfg())
 
-g = RegularGrammar('g11.txt')
+g = RegularGrammar('g22.txt')
 parser = LL1Parser(g)
-parser.computeFirst()
-for key in parser.first.keys():
-    print(key, " ", parser.first[key])
+# parser.computeFirst()
+# for key in parser.first.keys():
+#     print(key, " ", parser.first[key])
+#
+# print('\n\n\n')
+# parser.compute_follow()
+# for key in parser.follow.keys():
+#     print(key, " ", parser.follow[key])
 
-print('\n\n\n')
-parser.compute_follow()
-for key in parser.follow.keys():
-    print(key, " ", parser.follow[key])
-
-#parser.parsing_table()
+#parser.parseSequence("what")
+parser.print_table()
 
 #
 #
