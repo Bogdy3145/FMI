@@ -17,6 +17,30 @@ class Service {
     required this.price,
   });
 
+  factory Service.fromJson(Map<String, dynamic> json) {
+    return Service(
+      id: json['id'] as int,
+      name: json['name'] as String,
+      provider: json['provider'] as String,
+      location: json['location'] as String,
+      radius: json['radius'] as int,
+      phone: json['phone'] as String,
+      price: json['price'] as int,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'provider': provider,
+      'location': location,
+      'radius': radius,
+      'phone': phone,
+      'price': price,
+    };
+  }
+
   Service copyWith({
     int? id,
     String? name,
@@ -37,8 +61,36 @@ class Service {
     );
   }
 
+  Map<String, dynamic> toMap() {
+  return {
+    'id': id,
+    'name': name,
+    'provider': provider,
+    'location': location,
+    'radius': radius,
+    'phone': phone,
+    'price': price
+  };
+}
+
+factory Service.fromMap(Map<String, dynamic> map) {
+  return Service(
+    id: map['id'],
+    name: map['name'],
+    provider: map['provider'],
+    location: map['location'],
+    radius: map['radius'],
+    phone: map['phone'],
+    price: map['price'],
+  );
+}
+
   @override
   String toString() {
     return 'Service(id: $id, name: $name, provider: $provider, location: $location, radius: $radius, phone: $phone, price: $price)';
+  }
+
+  int getId() {
+    return id;
   }
 }

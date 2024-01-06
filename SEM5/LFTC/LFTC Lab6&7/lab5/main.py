@@ -12,7 +12,8 @@ from grammar2 import RegularGrammar
 # print(g.get_nonterminal_productions('S'))
 # print(g.is_cfg())
 
-g = RegularGrammar('g22.txt')
+g = RegularGrammar('g11.txt')
+
 parser = LL1Parser(g)
 # parser.computeFirst()
 # for key in parser.first.keys():
@@ -25,6 +26,8 @@ parser = LL1Parser(g)
 
 #parser.parseSequence("what")
 parser.print_table()
+
+
 
 #
 #

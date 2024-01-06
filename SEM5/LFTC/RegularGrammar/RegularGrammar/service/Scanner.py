@@ -7,11 +7,14 @@ class Scanner:
     def __init__(self):
         self.pif = PIF()
         self.st = SymbolTable(50)
-        self.separators = ['(', ')', ' ', '\n', '[', ']', ';', ',', '{', '}']
-        self.operators = ["+", "++", "-", "--", "*", "/", "!=", "=", "==", "<", "<=", ">", ">=", "^"]
-        self.reservedWords = ["defined", "func", "array", "char", "const", "for", "if", "else", "integer", "boolean",
-                              "return", "while", "READ", "WRITE", "PRINT", "mod", "and", "or", "length"]
+        self.separators = ['(', ')', ' ', '\n', '[', ']', ';',':' ',', '{', '}']
+        self.operators = ["plus", "minus", "ori", "impartit_la", "ia_locul_la", "mai_mic_ca", "mai_mic_egal_ca", "egal_cu", "mai_mare_egal_ca", "mai_mare_ca", "diferit_de", "modulo"]
+
+        self.reservedWords = ["lista", "constanta", "altfel", "daca", "atunci", "numar_intreg", "cuvant", "ori_alba_ori_neagra", "caracter_simplu",
+                              "numar_cu_virgula","de_tip", "IDENTIFIER", "CONST",
+                              "citeste", "EU_BOGDAN_DECLAR", "cat_timp", "fa", "printeaza_urmatoarele", "armaghedon", "amin", "no_dai", "no_stai"]
         self.errors = ""
+        #[ ] ( ) { } : ; , space
 
     def scan(self, filename):
         file = open(filename, 'r')
@@ -54,7 +57,7 @@ class Scanner:
         return (re.match(constant_pattern, token)) is not None
 
     def checkIdentifier(self, token):
-        return re.match(r'^([a-z]|[A-Z])([a-zA-Z]|[0-9])*$', token) is not None
+        return re.match(r'^#.*\$$', token) is not None
 
     def writeToFile(self, content, filename):
         file = open(filename, "w")

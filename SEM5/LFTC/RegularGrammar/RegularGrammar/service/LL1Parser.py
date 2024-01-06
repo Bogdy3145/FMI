@@ -9,13 +9,13 @@ class LL1Parser:
         self.scanner = scanner
         self.first = {}
         self.follow = {}
-        for terminal in self.grammar.sigma:
+        for terminal in self.grammar.E:
             self.first[terminal] = terminal
         for non_terminal in self.grammar.N:
             self.follow[non_terminal] = []
 
         self.table = {}
-        for terminal in self.grammar.sigma:
+        for terminal in self.grammar.E:
             self.table[terminal] = []
         for non_terminal in self.grammar.N:
             self.table[non_terminal] = []
@@ -29,7 +29,7 @@ class LL1Parser:
             if key not in self.first.keys():
                 self.first[key] = []
             for elem in self.grammar.productions[key]:
-                if elem[0] in self.grammar.sigma or elem[0] == "epsilon":
+                if elem[0] in self.grammar.E or elem[0] == "epsilon":
                     self.first[key].append(elem[0])
                     self.first[key] = list(set(self.first[key]))
 
@@ -48,7 +48,7 @@ class LL1Parser:
                                     if "epsilon" in self.first[key]:
                                         self.first[key].remove("epsilon")
                                     break
-                                elif char in self.grammar.sigma:
+                                elif char in self.grammar.E:
                                     self.first[key] = list(set(list(self.first[char]) + self.first[key]))
                                     break
                     elif elem[0] in self.grammar.N:  # and len(self.first[elem[0]]) != 0:
@@ -100,7 +100,7 @@ class LL1Parser:
     def parsing_table(self):
         self.computeFirst()
         self.compute_follow()
-        for i in self.grammar.sigma:
+        for i in self.grammar.E:
             self.table[i] = [[i, "POP", 0]]
 
         index = 0
@@ -117,7 +117,7 @@ class LL1Parser:
                     else:
                         index += 1
                         char = prod[0]
-                        if char in self.grammar.sigma:
+                        if char in self.grammar.E:
                             self.table[element].append(
                                 [char, prod, index])
                         else:
@@ -210,12 +210,12 @@ class LL1Parser:
     def print_table(self):
         self.parsing_table()
 
-        headers = list(self.grammar.sigma)
+        headers = list(self.grammar.E)
 
         data = {i: [' '] * len(headers) for i in self.table}
 
         for i in self.table:
-            for j in self.grammar.sigma:
+            for j in self.grammar.E:
                 if len(self.table[i]) != 0:
                     if isinstance(self.table[i][0], list):
                         for elem in self.table[i]:

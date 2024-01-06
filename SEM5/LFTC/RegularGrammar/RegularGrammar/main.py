@@ -5,8 +5,8 @@ from ui import UI
 
 if __name__ == '__main__':
 
-    filename = "g1.txt"
-    seqFilename = "seq1.in"
+    filename = "g3.txt"
+    seqFilename = "seq3.in"
     # filename = "g2-DJ.txt"
     # seqFilename = "seq2.in"
 

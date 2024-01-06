@@ -5,13 +5,13 @@ from operator import indexOf
 class RegularGrammar:
     def __init__(self, filename):
         self.N = []
-        self.sigma = []
+        self.E = []
         self.productions = {}
         self.startSymbol = ''
         self.numberedProduction = {}
         self.getGrammarFromFile(filename)
         self.first = {}
-        for terminal in self.sigma:
+        for terminal in self.E:
             self.first[terminal] = terminal
 
     def getGrammarFromFile(self, filename):
@@ -28,11 +28,11 @@ class RegularGrammar:
 
             if elements[0] == 'N':
                 self.N = elements[1].split(" ")
-            elif elements[0] == 'sigma':
-                self.sigma = elements[1].split(" ")
+            elif elements[0] == 'E':
+                self.E = elements[1].split(" ")
             elif elements[0] == 'P':
                 indice += 1
-                prod = elements[1].split("|")
+                prod = elements[1].split("->")
                 values = prod[1].split(' ')
                 self.numberedProduction[tuple(values)] = indice
                 if prod[0] in self.productions.keys():
@@ -56,7 +56,7 @@ class RegularGrammar:
     def getAllTerminals(self):
         stringBuilder = "Σ = {"
 
-        for elem in self.sigma:
+        for elem in self.E:
             stringBuilder += elem
             stringBuilder += ', '
 

@@ -1,18 +1,23 @@
 from operator import indexOf
 
+
+
 class RegularGrammar:
     def __init__(self, filename):
         self.N = []
         self.E = []
-        self.P = {}
+        self.productions = {}
         self.startSymbol = ''
         self.numberedProduction = {}
         self.getGrammarFromFile(filename)
+        self.first = {}
+        for terminal in self.E:
+            self.first[terminal] = terminal
 
     def getGrammarFromFile(self, filename):
+        indice = 0
         file = open(filename, "r")
         lines = file.readlines()
-        indice = 0
 
         for line in lines:
             elements = []
@@ -27,22 +32,15 @@ class RegularGrammar:
                 self.E = elements[1].split(" ")
             elif elements[0] == 'P':
                 indice += 1
-                elements[1].replace(" ", "")
-                prod = elements[1].split("->")
-                self.numberedProduction[prod[1]] = indice
-                if prod[0] in self.P.keys():
-                    self.P[prod[0]].append(prod[1])
+                prod = elements[1].split("|")
+                values = prod[1].split(' ')
+                self.numberedProduction[tuple(values)] = indice
+                if prod[0] in self.productions.keys():
+                    self.productions[prod[0]].append(values)
                 else:
-                    self.P[prod[0]] = [prod[1]]
+                    self.productions[prod[0]] = [values]
             elif elements[0] == 'S':
                 self.startSymbol = elements[1]
-        file.close()
-
-        if not self.isCFG():
-            print("This is not a CFG")
-            return
-
-
 
     def getAllNonterminals(self):
         stringBuilder = "N = {"
@@ -69,11 +67,11 @@ class RegularGrammar:
     def getAllProductions(self):
         stringBuilder = ""
 
-        for key in self.P.keys():
+        for key in self.productions.keys():
             stringBuilder = stringBuilder + key + ' -> '
-            if type(self.P[key]) == list:
-                for elem in self.P[key]:
-                    stringBuilder = stringBuilder + elem + "|"
+            if type(self.productions[key]) == list:
+                for elem in self.productions[key]:
+                    stringBuilder = stringBuilder + ' '.join(elem) + " |"
             stringBuilder = stringBuilder[:-1]
             stringBuilder += '\n'
 
@@ -84,12 +82,11 @@ class RegularGrammar:
 
     def isCFG(self):
         list = []
-        for key in self.P.keys():
-            for terminal in self.P[key]:
+        for key in self.productions.keys():
+            for terminal in self.productions[key]:
                 if terminal in list and key in self.N:
                     print(terminal, " ", key)
                     list.append(terminal)
                     return False
-
 
         return True

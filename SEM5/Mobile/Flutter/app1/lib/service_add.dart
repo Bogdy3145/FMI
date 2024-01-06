@@ -1,6 +1,13 @@
+import 'dart:async';
+
+import 'package:app1/ServiceNotifier.dart';
+import 'package:app1/sql/sql_helper.dart';
 import 'package:flutter/material.dart';
+import 'ApiRequests.dart';
 import 'repository.dart'; // Import your ServiceRepository
 import 'service.dart'; // Import the Service model
+import 'package:provider/provider.dart';
+
 
 class ServiceAddPage extends StatefulWidget {
   @override
@@ -8,7 +15,6 @@ class ServiceAddPage extends StatefulWidget {
 }
 
 class _ServiceAddPageState extends State<ServiceAddPage> {
-  final ServiceRepository _serviceRepository = ServiceRepository();
 
   // Create a Service object to store the form data
   Service _newService = Service(
@@ -23,26 +29,12 @@ class _ServiceAddPageState extends State<ServiceAddPage> {
 
   final _formKey = GlobalKey<FormState>();
 
-  void _saveService() async {
-  if (_formKey.currentState!.validate()) {
-    // Save the new service to the database
-    final newServiceId = await _serviceRepository.addService(_newService);
-
-    if (newServiceId > 0) {
-      // Service was added successfully
-      print('Service added successfully');
-      Navigator.pop(context, true); // Return 'true' to indicate success
-    } else {
-      // Failed to add service
-      print('Failed to add service');
-      Navigator.pop(context, false); // Return 'false' to indicate failure
-    }
-  }
-}
-
+  
 
   @override
   Widget build(BuildContext context) {
+    final serviceNotifier = Provider.of<ServiceNotifier>(context, listen: false);
+    final nextId = serviceNotifier.findHighestId()+1;
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Service'),
@@ -130,7 +122,88 @@ class _ServiceAddPageState extends State<ServiceAddPage> {
             ),
             ElevatedButton(
 
-              onPressed: _saveService,
+              onPressed: () async{
+
+          try{
+                var result = 0;
+                try{
+                      await ApiRequests.postRequest(
+                        '/service',
+                      _newService.toMap(),
+                      ).timeout(
+                        Duration(seconds: 2),
+                        onTimeout: () {
+                          // This callback is called if the network request times out
+                          throw TimeoutException('The request to the server timed out');
+                        },
+                      );
+
+                        // Insert new recipe in SQLite
+                        result = await SQLHelper.instance.createItem(_newService.name,_newService.provider, _newService.location, _newService.radius, _newService.phone, _newService.price);
+                      } 
+                catch(e){ 
+                        print("Error posting recipe to the server or timeout: $e");
+
+                        // Save recipe to local DB with negative ID to be synced at next connection with the server
+                          var negativeId = serviceNotifier.findLowestId();
+
+                          if(negativeId > 0 )
+                          {
+                            // If it is the first added offline, just negate the id
+                            _newService.id = - _newService.id;
+                          }
+                          else{
+                            // If multiple are added offline, we need to find the lowest id and subtract 1 from it 
+                            _newService.id = negativeId -1;
+                          }
+
+                        result = await SQLHelper.instance.createItem(_newService.name,_newService.provider, _newService.location, _newService.radius, _newService.phone, _newService.price);
+                        if(result!=0)
+                          print("Successfully posted recipe to local DB");}
+
+                        if (result != 0) {
+                    Navigator.pop(context, _newService);} 
+                  else {
+                    // Alert dialog for error
+                    print("Error when trying to add new service in local database");
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text('Error'),
+                        content: Text('Failed to add a new service. Please try again.'),
+                        actions: <Widget>[
+                          TextButton(
+                            child: Text('OK'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+              } catch (e) {
+                // Log the error message 
+                print("Error when trying to add new service: $e");
+
+                // Show AlertDialog
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('Error'),
+                    content: Text('Failed to add a new service. Please try again.'),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text('OK'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              }
+              },
               child: Text('Submit'),
             ),
           ],
