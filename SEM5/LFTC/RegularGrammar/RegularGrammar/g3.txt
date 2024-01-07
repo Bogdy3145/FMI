@@ -1,14 +1,15 @@
 N=program decllist declaration type1 arraydecl type cmpdstmt stmtlist stmt simplstmt assignstmt expression term factor iostmt structstmt ifstmt whilestmt condition RELATION
 E=plus minus ori impartit_la ia_locul_la mai_mic_ca mai_mic_egal_ca egal_cu mai_mare_egal_ca mai_mare_ca diferit_de modulo [ ] ( ) { } : ; , space lista constanta altfel daca atunci numar_intreg cuvant ori_alba_ori_neagra caracter_simplu numar_cu_virgula citeste EU_BOGDAN_DECLAR cat_timp fa printeaza_urmatoarele armaghedon amin no_dai no_stai de_tip IDENTIFIER CONST
+P=program->decllist amin
 P=program->decllist stmtlist amin
 P=program->stmtlist amin
 P=program->amin
-P=decllist->declaration decllist
 P=decllist->EU_BOGDAN_DECLAR declaration
+P=decllist->declaration decllist
 P=declaration->IDENTIFIER de_tip type
+P=type1->numar_intreg
 P=type1->ori_alba_ori_neagra
 P=type1->caracter_simplu
-P=type1->numar_intreg
 P=type1->cuvant
 P=arraydecl->lista [ ] de_tip type1
 P=type->type1
