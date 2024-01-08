@@ -6,7 +6,7 @@ from domain.regularGrammar import RegularGrammar
 
 class test_LL1Parser(unittest.TestCase):
     def setUp(self):
-        filename = "g1.txt"
+        filename = "g3.txt"
         grammar = RegularGrammar(filename)
         self.parser = LL1Parser(grammar)
 

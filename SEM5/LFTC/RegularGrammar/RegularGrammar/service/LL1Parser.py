@@ -177,8 +177,7 @@ class LL1Parser:
         for elem in self.table[workingStack[0]]:
             terminals.append(str(elem[0]))
 
-        if inputStack[0] == workingStack[0] or (self.scanner.checkIdentifier(inputStack[0]) and workingStack[0] ==
-                                                "id") or (
+        if inputStack[0] == workingStack[0] or (self.scanner.checkIdentifier(inputStack[0])) or (
                 self.scanner.checkConstant(inputStack[0]) and workingStack[0] == "constants"):
             inputStack.pop(0)
             workingStack.pop(0)

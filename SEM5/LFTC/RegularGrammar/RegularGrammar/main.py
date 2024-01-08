@@ -7,8 +7,6 @@ if __name__ == '__main__':
 
     filename = "g3.txt"
     seqFilename = "seq3.in"
-    # filename = "g2-DJ.txt"
-    # seqFilename = "seq2.in"
 
     scanner = Scanner()
     scanner.scan(seqFilename)
