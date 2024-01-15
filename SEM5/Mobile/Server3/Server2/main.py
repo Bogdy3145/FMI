@@ -1,16 +1,15 @@
 import asyncio
 import json
-#import threading
-from threading import Thread
-from flask_cors import CORS
-import websockets
+import threading
+
+import websockets as websockets
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, jsonify, request, render_template
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///services.db'  # SQLite database file
 db = SQLAlchemy(app)
-connected_clients = set()
+connected_clients = []
 
 
 class Service(db.Model):
@@ -55,6 +54,12 @@ def add_service():
     db.session.add(new_service)
     db.session.commit()
     print("Service added successfully")
+
+    data['id'] = new_service.id
+    json_data = json.dumps(data)
+
+    # Broadcast the updated request data to the WebSocket server
+    asyncio.run(broadcast_request("ADD#" + json_data))
     return jsonify({'message': 'Service added successfully'})
 
 @app.route('/update', methods=['PUT'])
@@ -77,6 +82,9 @@ def update_service():
 
         db.session.commit()
         print("Service updated successfully")
+
+        asyncio.run(broadcast_request("UPDATE#" + str(request.data, "UTF-8")))
+
         return jsonify({'message': 'Service updated successfully'})
     else:
         return jsonify({'message': 'Service not found'}), 404
@@ -102,53 +110,60 @@ def delete_service(service_id):
         db.session.delete(service)
         db.session.commit()
         print("Service deleted successfully")
+        asyncio.run(broadcast_request("DELETE#" + str(service_id)))
         return jsonify({'message': 'Service deleted successfully'})
     else:
         return jsonify({'message': 'Service not found'}), 404
 
-async def send(websocket, message):
+
+
+
+async def send_request(websocket, message):
+    # Send message to one client
     try:
         await websocket.send(message)
     except websockets.ConnectionClosed:
-        CLIENTS.remove(websocket)
-        pass
+        connected_clients.remove(websocket)
 
 
-async def broadcast(message):
-    for websocket in CLIENTS:
-        asyncio.create_task(send(websocket, message))
+async def broadcast_request(message):
+    # Send new request to all connected clients
+    print("Broadcasting new request to all connected clients: "+message)
+    for socket in connected_clients:
+        asyncio.create_task(send_request(socket, message))
 
 
-async def echo(websocket):
-    CLIENTS.append(websocket)
+async def handle_clients(websocket):
+    # Add/ remove new connections
+    connected_clients.append(websocket)
+    print("New client connected" + str(websocket))
     try:
-        # data = await websocket.recv()
-        # print(data)
-
         await websocket.wait_closed()
     finally:
-        CLIENTS.remove(websocket)
+        connected_clients.remove(websocket)
 
 
-async def main_sockets():
-    async with websockets.serve(echo, "0.0.0.0", 8765, ssl=None):
+
+async def start_websocket():
+    # Start websocket
+    async with websockets.serve(handle_clients, "192.168.3.123", 8765, ssl=None):
         await asyncio.Future()
 
 
-def routine1():
-    asyncio.run(main_sockets(), debug=False)
+def websocket_thread():
+    asyncio.run(start_websocket(),debug=False)
 
 
-def routine2():
-    app.run(host="0.0.0.0", debug=False, threaded=True)
+def server_requests_thread():
+    app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)
 
 
 
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()  # Create tables before running the app
-
-
-    app.run(host='0.0.0.0', port=5000, debug=True, threaded=True)
-    # Flash has built-in with the "threaded = True" option:
-    # implementation using the SocketServer.ThreadingMixIn class
+    thread_web = threading.Thread(target=server_requests_thread)
+    thread_server = threading.Thread(target=websocket_thread)
+    # Start server requests and websocket on separate threads
+    thread_server.start()
+    thread_web.start()

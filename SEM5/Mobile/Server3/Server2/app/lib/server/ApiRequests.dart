@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:connectivity/connectivity.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+
 
 class ApiRequests {
    static final String baseUrl = 'http://192.168.3.123:5000';  // Replace with your local IP address and Flask port

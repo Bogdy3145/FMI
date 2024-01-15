@@ -1,0 +1,5 @@
+program
+{
+    numar_intreg #a$;
+    
+}
