@@ -1,5 +1,1 @@
-program
-{
-    numar_intreg #a$;
-    
-}
+numar_intreg #a$;
